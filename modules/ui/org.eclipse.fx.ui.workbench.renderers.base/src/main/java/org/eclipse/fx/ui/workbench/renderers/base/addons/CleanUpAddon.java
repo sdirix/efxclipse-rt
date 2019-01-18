@@ -77,20 +77,21 @@ public class CleanUpAddon {
 				boolean lastStack = isLastEditorStack(container);
 				if (tbrCount == 0 && !lastStack) {
 					container.setToBeRendered(false);
-				}
+				}				
 
 				if (container.getChildren().isEmpty()) {
 					container.setParent(null);
 				} else if( /* we never collapse MCompositePart see 464328*/ (!(container instanceof MCompositePart)) && container instanceof MGenericTile<?> && container.getChildren().size() == 1 ) {
 					final MGenericTile<MUIElement> tile = (MGenericTile<MUIElement>) container;
-					int idx = container.getParent().getChildren().indexOf(container);
+					MElementContainer<MUIElement> parent = container.getParent();
+					int idx = parent.getChildren().indexOf(container);
 
 					String containerData = tile.getContainerData();
+					container.setParent(null);
 					MUIElement child = container.getChildren().remove(0);
 					if( child != null ) {
 						child.setContainerData(containerData);
-						container.getParent().getChildren().add(idx,child);
-						container.setParent(null);
+						parent.getChildren().add(idx,child);
 					} else {
 						LoggerCreator.createLogger(getClass()).error("Container has a NULL value as a child"); //$NON-NLS-1$
 					}
